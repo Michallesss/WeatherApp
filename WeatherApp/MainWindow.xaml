@@ -1,0 +1,31 @@
+﻿<Window x:Class="WeatherApp.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:m="clr-namespace:Microsoft.Maps.MapControl.WPF;assembly=Microsoft.Maps.MapControl.WPF"
+        xmlns:local="clr-namespace:WeatherApp"
+        mc:Ignorable="d"
+        Title="WeatherApp" Height="450" Width="800">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="15*"/>
+        </Grid.RowDefinitions>
+        
+        <TextBox 
+            x:Name="address"
+            Grid.Row="0"
+            TextChanged="OpenWeatherRequestApi"
+        >
+            [Przykładowy adres]
+        </TextBox>
+        
+        <m:Map 
+            x:Name="map"
+            Grid.Row="1"
+            CredentialsProvider="INSERT_YOUR_BING_MAPS_KEY"
+            MouseDoubleClick="MapWithPushpins_MouseDoubleClick"
+        />
+    </Grid>
+</Window>
