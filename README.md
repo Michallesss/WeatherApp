@@ -3,8 +3,8 @@
 Zadanie polega na utworzeniu programu do sprawdzania pogody dla danego regionu, miasta bądź wskazań geograficznych.
 
 #### Jako minimum program powinien wyświetlać następujące informacje:
-    jaka jest aktualnie aura (czy pada deszcz, czy pada śnieg, jaka jest temperatura, jaka jest odczuwalna temperatura, wilgotność oraz nasłonecznienie)
-    pogodę na co najmniej 3 godziny do przodu (z tymi samymi wartościami)
+- jaka jest aktualnie aura (czy pada deszcz, czy pada śnieg, jaka jest temperatura, jaka jest odczuwalna temperatura, wilgotność oraz nasłonecznienie)
+- pogodę na co najmniej 3 godziny do przodu (z tymi samymi wartościami)
 Za tę część zostanie wystawiona ocena.
 
 DODATKOWO, jeżeli program będzie obsługiwany poprzez dowolną mapę (Bing, OpenStreeMap czy Google) - można otrzymać dodatkową ocenę 
