@@ -12,15 +12,14 @@
             <RowDefinition Height="1*"/>
             <RowDefinition Height="15*"/>
         </Grid.RowDefinitions>
-        
+
         <TextBox 
             x:Name="address"
             Grid.Row="0"
-            TextChanged="OpenWeatherRequestApi"
-        >
-            [Przykładowy adres]
-        </TextBox>
-        
+            Text=""
+            TextChanged="address_TextChanged"
+        />
+
         <m:Map 
             x:Name="map"
             Grid.Row="1"

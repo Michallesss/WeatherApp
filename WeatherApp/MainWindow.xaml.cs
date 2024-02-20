@@ -3,8 +3,11 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.Tracing;
 using System.Linq;
+using System.Net.Http;
+using System.Net.Http.Json;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -23,7 +26,10 @@ namespace WeatherApp
     /// </summary>
     public partial class MainWindow : Window
     {
+        string apiid = "";
+        private static HttpClient client = new HttpClient();
         Pushpin pin = new Pushpin();
+        Location pinLocation;
 
         public MainWindow()
         {
@@ -35,18 +41,23 @@ namespace WeatherApp
         {
             e.Handled = true;
             Point mousePosition = e.GetPosition(this);
-            Location pinLocation = map.ViewportPointToLocation(mousePosition);
+            pinLocation = map.ViewportPointToLocation(mousePosition);
             pin.Location = pinLocation;
 
             address.Text = pinLocation.ToString();
-
-            // request https://api.openweathermap.org/data/2.5/onecall?lat={pinLocation.Latitude}&lon={pinLocation.Longitude}
-            // by https://openweathermap.org/api/one-call-api
         }
 
-        private void address_TextChanged(object sender, TextChangedEventArgs e)
+        private async void address_TextChanged(object sender, TextChangedEventArgs e)
         {
-            // https://openweathermap.org/current
+            HttpResponseMessage response;
+            TextBox addressTextBox = (TextBox)sender;
+
+            if (addressTextBox.Text == pinLocation.ToString())
+                response = await client.GetAsync($"https://api.openweathermap.org/data/2.5/onecall?lat={pinLocation.Latitude}&lon={pinLocation.Longitude}&apiid={apiid}");
+            else
+                response = await client.GetAsync($"https://api.openweathermap.org/data/2.5/onecall?q={addressTextBox.Text}&apiid={apiid}");
+
+            MessageBox.Show(await response.Content.ReadAsStringAsync());
         }
     }
 }
