@@ -45,10 +45,17 @@ namespace WeatherApp
             pin.Location = pinLocation;
 
             HttpResponseMessage response = await client.GetAsync($"https://api.openweathermap.org/data/2.5/weather?lat={pinLocation.Latitude}&lon={pinLocation.Longitude}&apiid={apiid}");
-
             string jsonString = await response.Content.ReadAsStringAsync();
-            Object details = JsonConvert.DeserializeObject(jsonString);
-            MessageBox.Show(details.ToString());
+
+            if (response.IsSuccessStatusCode)
+            {
+                WeatherInfo.root details = JsonConvert.DeserializeObject<WeatherInfo.root>(jsonString);
+                MessageBox.Show(details.weather[0].description.ToString());
+            }
+            else
+            {
+                MessageBox.Show(jsonString);
+            }
         }
     }
 }
