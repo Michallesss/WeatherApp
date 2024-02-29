@@ -1,4 +1,5 @@
 ﻿using Microsoft.Maps.MapControl.WPF;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.Tracing;
@@ -26,10 +27,9 @@ namespace WeatherApp
     /// </summary>
     public partial class MainWindow : Window
     {
-        string apiid = "";
+        string apiid = "bbb384ea90180777bcc406a7ab401bf9";
         private static HttpClient client = new HttpClient();
         Pushpin pin = new Pushpin();
-        Location pinLocation;
 
         public MainWindow()
         {
@@ -37,27 +37,18 @@ namespace WeatherApp
             map.Children.Add(pin);
         }
 
-        private void MapWithPushpins_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        private async void MapWithPushpins_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             e.Handled = true;
             Point mousePosition = e.GetPosition(this);
-            pinLocation = map.ViewportPointToLocation(mousePosition);
+            Location pinLocation = map.ViewportPointToLocation(mousePosition);
             pin.Location = pinLocation;
 
-            address.Text = pinLocation.ToString();
-        }
+            HttpResponseMessage response = await client.GetAsync($"https://api.openweathermap.org/data/2.5/weather?lat={pinLocation.Latitude}&lon={pinLocation.Longitude}&apiid={apiid}");
 
-        private async void address_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            HttpResponseMessage response;
-            TextBox addressTextBox = (TextBox)sender;
-
-            if (addressTextBox.Text == pinLocation.ToString())
-                response = await client.GetAsync($"https://api.openweathermap.org/data/2.5/onecall?lat={pinLocation.Latitude}&lon={pinLocation.Longitude}&apiid={apiid}");
-            else
-                response = await client.GetAsync($"https://api.openweathermap.org/data/2.5/onecall?q={addressTextBox.Text}&apiid={apiid}");
-
-            MessageBox.Show(await response.Content.ReadAsStringAsync());
+            string jsonString = await response.Content.ReadAsStringAsync();
+            Object details = JsonConvert.DeserializeObject(jsonString);
+            MessageBox.Show(details.ToString());
         }
     }
 }

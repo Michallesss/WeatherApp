@@ -8,18 +8,6 @@
         mc:Ignorable="d"
         Title="WeatherApp" Height="450" Width="800">
     <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="1*"/>
-            <RowDefinition Height="15*"/>
-        </Grid.RowDefinitions>
-
-        <TextBox 
-            x:Name="address"
-            Grid.Row="0"
-            Text=""
-            TextChanged="address_TextChanged"
-        />
-
         <m:Map 
             x:Name="map"
             Grid.Row="1"
