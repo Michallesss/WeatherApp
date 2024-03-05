@@ -17,6 +17,7 @@ using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
@@ -38,33 +39,57 @@ namespace WeatherApp
             map.Children.Add(pin);
         }
 
-        private async void MapWithPushpins_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        void maPin(object sender, MouseEventArgs e)
         {
             e.Handled = true;
-            Point mousePosition = e.GetPosition(this);
-            Location pinLocation = map.ViewportPointToLocation(mousePosition);
+
+            Point mouse = e.GetPosition(this);
+            Location pinLocation = map.ViewportPointToLocation(mouse);
             pin.Location = pinLocation;
+            double lat = pinLocation.Latitude;
+            double lng = pinLocation.Longitude;
 
-            HttpResponseMessage response = await client.GetAsync($"https://api.openweathermap.org/data/2.5/weather?lat={pinLocation.Latitude}&lon={pinLocation.Longitude}&appid={apiid}");
-            string jsonString = await response.Content.ReadAsStringAsync();
-            WeatherInfo.root details = JsonConvert.DeserializeObject<WeatherInfo.root>(jsonString);
+            // Current
+            var result = client.GetAsync(new Uri($"https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lng}&appid={apiid}&units=metric&lang=pl")).Result.Content.ReadAsStringAsync().Result;
+            var current = JObject.Parse(result);
 
-            if (response.IsSuccessStatusCode)
-            {
-                // MessageBox.Show(details.weather[0].description.ToString());
-                double temp = details.main.temp - 273.15;
-                MessageBox.Show(
-                    $"Weather: {details.weather[0].main}.\n" +
-                    $"Description: {details.weather[0].description}.\n" +
-                    $"Temp: {(float)System.Math.Round(temp, 2)}°C\n" +
-                    $"Pressure: {details.main.pressure}hPa\n" +
-                    $"Humidity: {details.main.humidity}%"
-                );
-            }
-            else
-            {
-                MessageBox.Show(jsonString);
-            }
+            // Future 
+            result = client.GetAsync(new Uri($"https://api.openweathermap.org/data/2.5/forecast?lat={lat}&lon={lng}&appid={apiid}&units=metric&lang=pl")).Result.Content.ReadAsStringAsync().Result;
+            var future = JObject.Parse(result);
+
+            display(current, future);
+        }
+
+        private void SearchCity(object sender, RoutedEventArgs e)
+        {
+            var result = client.GetAsync(new Uri($"https://api.openweathermap.org/geo/1.0/direct?q={searchBar.Text}&appid={apiid}&units=metric")).Result.Content.ReadAsStringAsync().Result;
+            var geo = JArray.Parse(result);
+
+            // Current
+            result = client.GetAsync(new Uri($"https://api.openweathermap.org/data/2.5/weather?lat={geo[0]["lat"]}&lon={geo[0]["lon"]}&appid={apiid}&units=metric&lang=pl")).Result.Content.ReadAsStringAsync().Result;
+            var current = JObject.Parse(result);
+            
+            // Future 
+            result = client.GetAsync(new Uri($"https://api.openweathermap.org/data/2.5/forecast?lat={geo[0]["lat"]}&lon={geo[0]["lon"]}&appid={apiid}&units=metric&lang=pl")).Result.Content.ReadAsStringAsync().Result;
+            var future = JObject.Parse(result);
+            
+            display(current, future);
+        }
+
+        private void display(JObject current, JObject future)
+        {
+            // Current
+            DataCity.Text = $"Miasto: {current["name"]}";
+            currentDataAura.Text = $"Aura: {current["weather"][0]["description"]}";
+            currentDataTemp.Text = $"Temperatura: {current["main"]["temp"]} °C";
+            currentDataWater.Text = $"Wilgotność: {current["main"]["humidity"]}%";
+            currentDataPressure.Text = $"Ciśnienie: {current["main"]["pressure"]} hPa";
+
+            // Future
+            futureDataAura.Text = $"Aura: {future["list"][1]["weather"][0]["description"]}";
+            futureDataTemp.Text = $"Temperatura: {future["list"][1]["main"]["temp"]} °C";
+            futureDataWater.Text = $"Wilgotność: {future["list"][1]["main"]["humidity"]}%";
+            futureDataPressure.Text = $"Ciśnienie: {future["list"][1]["main"]["pressure"]} hPa";
         }
     }
 }
