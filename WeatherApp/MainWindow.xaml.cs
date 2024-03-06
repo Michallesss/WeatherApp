@@ -29,7 +29,7 @@ namespace WeatherApp
     /// </summary>
     public partial class MainWindow : Window
     {
-        string apiid = "bbb384ea90180777bcc406a7ab401bf9";
+        string apiid = Environment.GetEnvironmentVariable("API_KEY");
         private static HttpClient client = new HttpClient();
         Pushpin pin = new Pushpin();
 
